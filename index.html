@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BrightSmiles</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Nunito',sans-serif;background:#FAF8F3;-webkit-font-smoothing:antialiased;height:100%}
+:root{
+  --green:#3A9E7A;--gl:#E6F6F0;--gd:#1F7055;
+  --warm:#F5A623;--wl:#FEF4E0;--wd:#B87310;
+  --coral:#E8705A;--cl:#FDEAE6;
+  --sky:#4A8FD4;--sl:#EAF2FB;--sd:#2A5F9A;
+  --purple:#7C6FCD;--pl:#EEF0FB;
+  --ink:#1C2B22;--il:#3D5449;--im:#7A9088;
+  --white:#FFFFFF;--paper:#F2EFE8;--cream:#FAF8F3;
+  --border:#E0DDD5;--sh:0 2px 14px rgba(28,43,34,0.08);--shl:0 6px 28px rgba(28,43,34,0.13);
+}
+.app{max-width:400px;margin:0 auto;min-height:100vh;background:var(--white)}
+.scroll{height:calc(100vh - 58px - 66px);overflow-y:auto;padding-bottom:16px}
+.scroll::-webkit-scrollbar{display:none}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(0.72)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes wig{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}70%{transform:rotate(9deg)}}
+@keyframes rise{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-70px)}}
+.fu{animation:up 0.34s ease both}
+.topbar{background:var(--white);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;height:58px}
+.logo{font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;color:var(--ink)}
+.logo span{color:var(--green)}
+.coin-chip{display:flex;align-items:center;gap:5px;background:var(--wl);border:1.5px solid var(--warm);padding:5px 12px;border-radius:18px}
+.coin-chip b{font-size:14px;font-weight:800;color:var(--wd)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:400px;background:var(--white);border-top:1px solid var(--border);display:flex;padding:8px 0 18px;z-index:50}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;transition:all 0.2s}
+.ni .ic{font-size:21px;transition:transform 0.2s}
+.ni .lb{font-size:10px;font-weight:600;color:var(--im);letter-spacing:0.02em}
+.ni.on .ic{transform:scale(1.12)}
+.ni.on .lb{color:var(--gd)}
+.ob{padding:28px 20px 44px;display:flex;flex-direction:column;gap:20px;min-height:100vh;background:linear-gradient(160deg,#E6F6F0 0%,#F5F0E8 100%)}
+.ob-title{font-family:'Baloo 2',cursive;font-size:25px;font-weight:800;color:var(--ink);line-height:1.25}
+.ob-sub{font-size:14px;color:var(--im);line-height:1.72}
+.lbl{font-size:11px;font-weight:700;color:var(--im);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px}
+.inp{padding:13px 16px;border-radius:13px;border:2px solid var(--border);font-family:'Nunito',sans-serif;font-size:15px;color:var(--ink);background:var(--white);outline:none;width:100%;transition:border-color 0.2s}
+.inp:focus{border-color:var(--green)}
+.pdots{display:flex;justify-content:center;gap:7px}
+.pd{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.3s}
+.pd.on{background:var(--green);width:22px;border-radius:4px}
+.btn{width:100%;padding:15px;border-radius:14px;border:none;font-family:'Baloo 2',cursive;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.btn.primary{background:linear-gradient(135deg,var(--green),#4AB89A);color:white;box-shadow:0 4px 16px rgba(58,158,122,0.28)}
+.btn.primary:hover{transform:translateY(-2px)}
+.btn.primary:disabled{background:var(--border);box-shadow:none;transform:none;cursor:not-allowed;color:var(--im)}
+.btn.ghost{background:transparent;border:1.5px solid var(--border);color:var(--im);font-family:'Nunito',sans-serif;font-size:14px;font-weight:600}
+.btn.sm{width:auto;padding:9px 16px;font-size:13px;border-radius:11px}
+.av-row{display:flex;gap:8px;flex-wrap:wrap}
+.av{width:44px;height:44px;border-radius:50%;border:2.5px solid var(--border);background:var(--paper);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s}
+.av.on{border-color:var(--green);background:var(--gl);transform:scale(1.08)}
+.col-row{display:flex;gap:8px}
+.col{width:27px;height:27px;border-radius:50%;cursor:pointer;transition:all 0.2s;border:2.5px solid transparent}
+.col.on{transform:scale(1.2);border-color:white;box-shadow:0 0 0 2px var(--ink)}
+.sh{font-family:'Baloo 2',cursive;font-size:16px;font-weight:700;color:var(--ink);padding:14px 18px 6px;display:flex;align-items:center;justify-content:space-between}
+.sha{font-size:12px;font-weight:600;color:var(--gd);font-family:'Nunito',sans-serif;cursor:pointer}
+.cc{margin:0 16px 10px;background:var(--white);border-radius:18px;border:1.5px solid var(--border);box-shadow:var(--sh);overflow:hidden}
+.cc-top{padding:14px 16px;display:flex;align-items:center;gap:12px}
+.cc-av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
+.cc-name{font-family:'Baloo 2',cursive;font-size:16px;font-weight:700;color:var(--ink)}
+.cc-sub{font-size:12px;color:var(--im);margin-top:1px}
+.mn-row{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.mn-cell{padding:11px 10px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:background 0.15s;border-right:1px solid var(--border)}
+.mn-cell:last-child{border-right:none}
+.mn-cell:hover{background:var(--paper)}
+.mn-cell.done{background:var(--gl);cursor:default}
+.mn-label{font-size:12px;font-weight:700;color:var(--im)}
+.mn-cell.done .mn-label{color:var(--gd)}
+.mn-btns{display:flex;gap:5px;margin-top:3px}
+.mn-btn{padding:5px 10px;border-radius:9px;border:none;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s}
+.mn-btn.full{background:var(--green);color:white}
+.mn-btn.quick{background:var(--wl);color:var(--wd);border:1px solid var(--warm)}
+.grp{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-bottom:10px}
+.gb{padding:13px 10px;border-radius:14px;border:2px solid var(--border);background:var(--white);cursor:pointer;text-align:center;transition:all 0.2s}
+.gb:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.gb.tog{border-color:var(--green);background:linear-gradient(135deg,var(--green),#4AB89A);color:white}
+.gb-icon{font-size:22px;margin-bottom:5px}
+.gb-title{font-family:'Baloo 2',cursive;font-size:14px;font-weight:700}
+.gb-sub{font-size:11px;margin-top:2px;opacity:.8}
+.fl-card{margin:0 16px 10px;border-radius:16px;padding:14px 16px;border:1.5px solid}
+.fl-bar{height:8px;border-radius:4px;background:var(--border);margin:8px 0 5px;overflow:hidden}
+.fl-fill{height:100%;background:linear-gradient(90deg,var(--coral),var(--warm));border-radius:4px}
+.rw-card{margin:0 16px 10px;background:var(--white);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--sh);padding:14px 16px}
+.rw-prog{height:10px;background:var(--paper);border-radius:5px;margin:10px 0 5px;overflow:hidden}
+.rw-fill{height:100%;background:linear-gradient(90deg,var(--warm),#FF9F40);border-radius:5px;transition:width 0.5s}
+.wk-card{margin:0 16px 10px;background:linear-gradient(135deg,var(--purple),var(--sky));border-radius:16px;padding:14px 16px;color:white}
+.wk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+.wk-day{display:flex;flex-direction:column;align-items:center;gap:2px}
+.wk-lbl{font-size:9px;font-weight:600;opacity:.8}
+.wk-am,.wk-pm{width:18px;height:18px;border-radius:50%;font-size:9px;display:flex;align-items:center;justify-content:center}
+.wk-yes{background:rgba(255,255,255,0.9);color:var(--gd)}
+.wk-no{background:rgba(255,255,255,0.2);color:rgba(255,255,255,0.6)}
+.wk-today{background:var(--warm);color:white}
+.dr-card{margin:0 16px 10px;background:var(--sl);border-radius:16px;border:1.5px solid #C4DCEF;padding:14px 16px}
+.qg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
+.qc{background:var(--white);border-radius:14px;padding:13px 11px;border:1.5px solid var(--border);box-shadow:var(--sh);cursor:pointer;text-align:center;transition:all 0.2s}
+.qc:hover{transform:translateY(-2px)}
+.qc-icon{font-size:25px;margin-bottom:6px}
+.qc-title{font-family:'Baloo 2',cursive;font-size:13px;font-weight:700;color:var(--ink)}
+.qc-sub{font-size:11px;color:var(--im);margin-top:2px;line-height:1.45}
+.ts{padding:16px 18px;display:flex;flex-direction:column;align-items:center;gap:13px}
+.mb-bar{display:flex;background:var(--paper);border-radius:11px;padding:3px;width:100%}
+.mb{flex:1;padding:9px;border-radius:9px;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--im);transition:all 0.2s}
+.mb.on{background:var(--white);color:var(--ink);box-shadow:var(--sh)}
+.who-row{display:flex;gap:5px;width:100%;overflow-x:auto}
+.who-row::-webkit-scrollbar{display:none}
+.wp{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 11px;border-radius:12px;border:2px solid var(--border);background:var(--white);cursor:pointer;flex-shrink:0;transition:all 0.2s}
+.wp.on{border-color:var(--green);background:var(--gl)}
+.wp-av{width:33px;height:33px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px}
+.wp-name{font-size:11px;font-weight:700;color:var(--im)}
+.wp.on .wp-name{color:var(--gd)}
+.t-char{font-size:54px;animation:float 3s ease-in-out infinite;cursor:pointer}
+.t-char.go{animation:wig 0.4s ease,float 3s ease-in-out 0.4s infinite}
+.ring{position:relative;width:186px;height:186px}
+.r-svg{transform:rotate(-90deg)}
+.r-track{fill:none;stroke:var(--border);stroke-width:10}
+.r-prog{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 0.5s linear,stroke 0.5s}
+.r-mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.r-time{font-family:'Baloo 2',cursive;font-size:38px;font-weight:800;color:var(--ink);line-height:1}
+.r-lbl{font-size:12px;color:var(--im);margin-top:2px}
+.tip-box{width:100%;background:var(--sl);border-radius:12px;padding:12px 14px;border:1px solid #C4DCEF}
+.tip-lbl{font-size:11px;font-weight:700;color:var(--sd);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px}
+.tip-txt{font-size:13px;color:var(--ink);line-height:1.6}
+.tbtn{width:100%;padding:15px;border-radius:13px;border:none;font-family:'Baloo 2',cursive;font-size:17px;font-weight:700;cursor:pointer;transition:all 0.2s}
+.tbtn.go{background:linear-gradient(135deg,var(--green),#4AB89A);color:white;box-shadow:0 4px 18px rgba(58,158,122,0.3)}
+.tbtn.go:hover{transform:translateY(-2px)}
+.tbtn.stop{background:var(--cl);color:var(--coral);border:1.5px solid var(--coral)}
+.done-sc{padding:24px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.done-big{font-size:66px;animation:pop 0.45s ease}
+.done-title{font-family:'Baloo 2',cursive;font-size:25px;font-weight:800;color:var(--ink)}
+.done-msg{font-size:14px;color:var(--im);line-height:1.7;max-width:270px}
+.stars-chip{display:flex;align-items:center;gap:8px;background:var(--wl);border:2px solid var(--warm);padding:10px 22px;border-radius:18px}
+.stars-chip b{font-family:'Baloo 2',cursive;font-size:22px;color:var(--wd)}
+.rt-sc{padding:18px;display:flex;flex-direction:column;gap:13px}
+.rt-tabs{display:flex;background:var(--paper);border-radius:11px;padding:3px}
+.rt{flex:1;padding:10px;border-radius:9px;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--im);transition:all 0.2s;text-align:center}
+.rt.on{background:var(--white);color:var(--ink);box-shadow:var(--sh)}
+.rt-card{background:var(--white);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--sh);overflow:hidden}
+.rt-head{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.p-bar{height:5px;background:var(--border);overflow:hidden}
+.p-fill{height:100%;background:linear-gradient(90deg,var(--green),#4AB89A);transition:width 0.4s}
+.step-list{padding:10px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.step{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;background:var(--paper);border-radius:12px;cursor:pointer;transition:all 0.15s;border:1.5px solid transparent}
+.step:hover{border-color:var(--green)}
+.step.on{background:var(--gl);border-color:var(--green)}
+.step-ck{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all 0.2s;margin-top:1px}
+.step.on .step-ck{background:var(--green);border-color:var(--green);color:white}
+.s-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35}
+.s-detail{font-size:11.5px;color:var(--im);margin-top:2px;line-height:1.5}
+.step.on .s-name{color:var(--gd)}
+.note{background:var(--wl);border-radius:12px;padding:13px 15px;border:1px solid var(--warm);margin:0 14px 14px}
+.note-lbl{font-size:11px;font-weight:700;color:var(--wd);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:5px}
+.note-txt{font-size:13px;color:var(--ink);line-height:1.65}
+.nu-sc{padding:18px;display:flex;flex-direction:column;gap:13px}
+.nu-hero{background:linear-gradient(135deg,var(--green),#4AB89A);border-radius:18px;padding:20px 18px;color:white;text-align:center}
+.nu-hero h2{font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;margin-bottom:5px}
+.nu-card{background:var(--white);border-radius:16px;border:1.5px solid var(--border);box-shadow:var(--sh);padding:16px}
+.nu-title{font-family:'Baloo 2',cursive;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.fi{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:11px;cursor:pointer;margin-bottom:7px}
+.fi.good{background:var(--gl)}.fi.avoid{background:var(--cl)}.fi.ok{background:var(--wl)}
+.fi-em{font-size:20px;flex-shrink:0;margin-top:1px}
+.fi-name{font-size:13px;font-weight:700;color:var(--ink)}
+.fi-why{font-size:12px;color:var(--im);margin-top:2px;line-height:1.5}
+.fi-tap{font-size:11px;margin-top:2px}
+.fi.good .fi-tap{color:var(--green)}.fi.avoid .fi-tap{color:var(--coral)}.fi.ok .fi-tap{color:var(--wd)}
+.in-sc{padding:18px;display:flex;flex-direction:column;gap:12px}
+.in-hero{background:linear-gradient(135deg,var(--green),var(--sky));border-radius:18px;padding:20px 18px;color:white;text-align:center}
+.in-card{background:var(--white);border-radius:15px;border:1.5px solid var(--border);box-shadow:var(--sh);padding:16px}
+.in-title{font-family:'Baloo 2',cursive;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.in-body{font-size:13px;color:var(--il);line-height:1.72}
+.hi{background:var(--gl);border-left:3px solid var(--green);padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;font-size:13px;color:var(--ink);font-weight:500;line-height:1.6}
+.stt{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+.stn{background:var(--green);color:white;font-family:'Baloo 2',cursive;font-size:13px;font-weight:800;padding:4px 9px;border-radius:7px;flex-shrink:0;min-width:52px;text-align:center;line-height:1.4}
+.stb{font-size:13px;color:var(--il);line-height:1.55}
+.cdbs{font-family:'Baloo 2',cursive;font-size:28px;font-weight:800;color:var(--wd);margin:5px 0}
+.tag{display:inline-block;background:var(--green);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:9px;margin:3px 3px 3px 0}
+.coin-f{position:fixed;pointer-events:none;font-size:15px;font-weight:800;color:var(--wd);animation:rise 1.1s ease forwards;z-index:999}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--white);border:2px solid var(--green);border-radius:15px;padding:10px 18px;z-index:999;box-shadow:var(--shl);display:flex;gap:10px;align-items:center;animation:pop 0.3s ease;max-width:320px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.42);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--white);border-radius:22px 22px 0 0;padding:22px 20px 36px;width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px;animation:up 0.32s ease}
+.g4{height:4px}.g8{height:8px}.g12{height:12px}.g16{height:16px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+const EMOJIS = ["🦊","🐨","🦁","🐸","🐼","🦄","🐯","🐙"];
+const COLORS  = ["#E8705A","#F5A623","#3A9E7A","#4A8FD4","#7C6FCD","#E879A0"];
+const DAYS    = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+const TIPS = [
+  "Hold the brush at a 45 degree angle to the gums and use small circular strokes, not back and forth scrubbing.",
+  "Brush the outer surfaces first, then the inner surfaces, then the chewing surfaces on top.",
+  "After brushing, spit but do not rinse with water. The fluoride keeps protecting teeth if you leave it on.",
+  "Two minutes is about 30 seconds on each quarter of the mouth. The timer helps keep that honest.",
+];
+
+const MORNING_STEPS = [
+  { id:"m1", name:"Brush for 2 minutes", detail:"Use a pea-sized amount of fluoride toothpaste. This is the most important step of the whole morning." },
+  { id:"m2", name:"Spit, but do not rinse with water", detail:"Leaving fluoride on the teeth lets it keep protecting them after brushing. This matters especially in lower-fluoride areas." },
+  { id:"m3", name:"Drink a glass of water", detail:"Water helps wash away bacteria and food particles. If your tap water is fluoridated, even better." },
+  { id:"m4", name:"Choose a tooth-friendly breakfast", detail:"Eggs, yoghurt, cheese, oats or wholegrain toast are great options. Try to avoid sugary cereals and fruit juices first thing." },
+  { id:"m5", name:"Wait 30 minutes after eating before brushing again", detail:"Eating makes the mouth acidic. Brushing too soon can wear down softened enamel. Brush before breakfast whenever you can." },
+];
+
+const NIGHT_STEPS = [
+  { id:"n1", name:"Brush for 2 minutes", detail:"The night brush is the most important session of the day. Bacteria work hardest while we sleep and there is no saliva to fight them." },
+  { id:"n2", name:"Floss if your child is 7 or older", detail:"Flossing removes food stuck between teeth that a toothbrush cannot reach. It takes about 60 seconds and prevents cavities between teeth." },
+  { id:"n3", name:"Spit, but do not rinse", detail:"Leave the fluoride on overnight. It has all night to strengthen enamel while your child sleeps." },
+  { id:"n4", name:"Nothing to eat or drink after brushing", detail:"Even a small snack after brushing feeds bacteria overnight. Water is always fine though." },
+  { id:"n5", name:"Avoid sugary drinks in the 30 minutes before bed", detail:"Sugary drinks before bed are one of the main causes of childhood tooth decay. Swap juice or cordial for water in the evening." },
+];
+
+const GOOD_FOODS = [
+  { emoji:"🧀", name:"Cheese and dairy",     why:"Calcium strengthens enamel and cheese neutralises the acid left by other foods." },
+  { emoji:"🥦", name:"Crunchy vegetables",   why:"Carrots, celery and broccoli act like a natural scrub, clean teeth and stimulate saliva." },
+  { emoji:"🥚", name:"Eggs",                 why:"Rich in phosphorus and protein, which help remineralise and rebuild tooth enamel." },
+  { emoji:"🍎", name:"Apples",               why:"Natural crunch and high water content helps clean teeth and stimulates saliva production." },
+  { emoji:"💧", name:"Water",                why:"The best drink for teeth. It rinses away food and bacteria throughout the day." },
+  { emoji:"🥜", name:"Nuts",                 why:"Contain calcium, phosphorus and healthy fats that support strong tooth structure." },
+  { emoji:"🍃", name:"Leafy greens",         why:"Spinach and kale are packed with calcium and folic acid which support gum health." },
+];
+
+const AVOID_FOODS = [
+  { emoji:"🥤", name:"Soft drinks and cordial",    why:"High acid and sugar content attacks enamel within 20 seconds of contact. Even sugar-free versions are acidic." },
+  { emoji:"🍬", name:"Lollies and sticky sweets",  why:"Sugar feeds the bacteria that produce acid. Sticky sweets cling to teeth and keep the acid working for longer." },
+  { emoji:"🧃", name:"Fruit juice",                why:"Even 100% fruit juice has as much sugar as soft drink. It is far better to eat whole fruit and drink water." },
+  { emoji:"🍊", name:"Citrus fruits eaten alone",  why:"Highly acidic. Eat them with a meal rather than as a standalone snack, and wait 30 minutes before brushing." },
+  { emoji:"🍿", name:"Crackers and chips",         why:"These break down into sugar quickly and stick to the grooves in teeth. More decay-causing than most parents expect." },
+  { emoji:"🍇", name:"Dried fruit",               why:"Extremely high sugar content and sticky texture. Often worse for teeth than lollies despite feeling like a healthy snack." },
+];
+
+const OK_FOODS = [
+  { emoji:"🍓", name:"Fresh fruit with meals",    why:"Eat fresh fruit as part of a meal rather than a standalone snack. Meal saliva helps neutralise the fruit acid." },
+  { emoji:"🥖", name:"Bread and grains",          why:"Wholegrain is better than white. Eat at mealtimes rather than grazing all day, which keeps the mouth acidic." },
+  { emoji:"☕", name:"Unsweetened tea and coffee", why:"Low risk for decay, but they can stain teeth over time. Rinse with water afterwards when you can." },
+];
+
+function makeChild(name, emoji, color) {
+  const history = Array.from({ length: 7 }, (_, i) => ({
+    am: i < 5 ? Math.random() > 0.25 : false,
+    pm: i < 5 ? Math.random() > 0.2  : false,
+  }));
+  return { id: Date.now() + Math.random(), name, emoji, color, stars: Math.floor(Math.random()*20), morning: false, night: false, history };
+}
+
+function App() {
+  const [step, setStep]     = useState("ob1");
+  const [pname, setPname]   = useState("");
+  const [postcode, setPC]   = useState("");
+  const [children, setKids] = useState([]);
+  const [tab, setTab]       = useState("home");
+  const [coins, setCoins]   = useState(0);
+  const [coinFs, setCF]     = useState([]);
+  const [toast, setToast]   = useState(null);
+  const [dentistDate, setDD] = useState("");
+  const [rewardGoal, setRG]  = useState({ label:"", target:50 });
+  const [timerMode, setTM]  = useState("full");
+  const [timerChild, setTC] = useState(null);
+  const [timerSession, setTS] = useState("night");
+  const [running, setRun]   = useState(false);
+  const [timeLeft, setTL]   = useState(120);
+  const [done, setDone]     = useState(false);
+  const [tipIdx, setTip]    = useState(0);
+  const ref = useRef(null);
+  const [routineTab, setRT] = useState("morning");
+  const [mTicks, setMT]     = useState({});
+  const [nTicks, setNT]     = useState({});
+
+  const totalTime = timerMode === "full" ? 120 : 30;
+  const fluoPct   = postcode.length === 4 ? 62 : null;
+
+  const addCoins = (n, x=185, y=270) => {
+    setCoins(c => c + n);
+    const id = Date.now();
+    setCF(f => [...f, {id,n,x,y}]);
+    setTimeout(() => setCF(f => f.filter(c => c.id !== id)), 1200);
+  };
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2800); };
+  const updateKid = (idx, fn) => setKids(p => { const n=[...p]; n[idx]=fn(n[idx]); return n; });
+  const startBrush = (childIdx, session, mode="full") => { setTC(childIdx); setTS(session); setTM(mode); setTab("brush"); };
+
+  useEffect(() => {
+    if (!running) return;
+    ref.current = setInterval(() => {
+      setTL(t => {
+        if (t <= 1) {
+          clearInterval(ref.current);
+          setRun(false); setDone(true);
+          const earned = timerMode==="full" ? 15 : 8;
+          addCoins(earned, 185, 230);
+          const targets = timerChild==="all" ? children.map((_,i)=>i) : [timerChild];
+          targets.forEach(i => updateKid(i, c => {
+            const u = timerSession==="morning" ? {morning:true} : {night:true};
+            const h = c.history ? [...c.history] : [];
+            if (h[6]) h[6]={...h[6],[timerSession==="morning"?"am":"pm"]:true};
+            return {...c,...u,stars:(c.stars||0)+earned,history:h};
+          }));
+          showToast({emoji:"⭐", text:`+${earned} stars earned!`});
+          return 0;
+        }
+        if (t%30===0) setTip(i=>(i+1)%TIPS.length);
+        return t-1;
+      });
+    }, 1000);
+    return () => clearInterval(ref.current);
+  }, [running]);
+
+  const startTimer = () => { setTL(totalTime); setDone(false); setRun(true); setTip(0); };
+  const stopTimer  = () => { clearInterval(ref.current); setRun(false); setTL(totalTime); };
+  const resetTimer = () => { setDone(false); setTL(totalTime); };
+
+  const isOb = step.startsWith("ob");
+
+  return (
+    <div>
+      {coinFs.map(f=><div key={f.id} className="coin-f" style={{left:f.x,top:f.y}}>+{f.n} ⭐</div>)}
+      {toast && <div className="toast"><span style={{fontSize:22}}>{toast.emoji}</span><span style={{fontSize:14,fontWeight:600,color:"#1C2B22"}}>{toast.text}</span></div>}
+      <div className="app">
+        {isOb
+          ? <Onboard step={step} setStep={setStep} pname={pname} setPname={setPname} postcode={postcode} setPC={setPC} children={children} setKids={setKids} setTab={setTab} dentistDate={dentistDate} setDD={setDD} rewardGoal={rewardGoal} setRG={setRG} />
+          : <>
+              <div className="topbar">
+                <span className="logo">Bright<span>Smiles</span></span>
+                <div className="coin-chip"><span style={{fontSize:14}}>⭐</span><b>{coins}</b></div>
+              </div>
+              <div className="scroll">
+                {tab==="home"      && <HomeScreen children={children} pname={pname} setTab={setTab} updateKid={updateKid} addCoins={addCoins} showToast={showToast} setKids={setKids} startBrush={startBrush} postcode={postcode} fluoPct={fluoPct} dentistDate={dentistDate} rewardGoal={rewardGoal} coins={coins} />}
+                {tab==="brush"     && <BrushScreen children={children} timerChild={timerChild} setTC={setTC} timerMode={timerMode} setTM={setTM} timerSession={timerSession} setTS={setTS} running={running} timeLeft={timeLeft} done={done} totalTime={totalTime} tipIdx={tipIdx} startTimer={startTimer} stopTimer={stopTimer} resetTimer={resetTimer} />}
+                {tab==="routine"   && <RoutineScreen routineTab={routineTab} setRT={setRT} mTicks={mTicks} setMT={setMT} nTicks={nTicks} setNT={setNT} addCoins={addCoins} showToast={showToast} />}
+                {tab==="nutrition" && <NutritionScreen />}
+                {tab==="info"      && <InfoScreen postcode={postcode} fluoPct={fluoPct} />}
+              </div>
+              <div className="nav">
+                {[["home","🏠","Home"],["brush","🦷","Brush"],["routine","📋","Routine"],["nutrition","🥗","Food"],["info","💡","Info"]].map(([id,ic,lb])=>(
+                  <div key={id} className={`ni ${tab===id?"on":""}`} onClick={()=>setTab(id)}>
+                    <span className="ic">{ic}</span><span className="lb">{lb}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+        }
+      </div>
+    </div>
+  );
+}
+
+function Onboard({ step, setStep, pname, setPname, postcode, setPC, children, setKids, setTab, dentistDate, setDD, rewardGoal, setRG }) {
+  const [tn,setTN]=useState(""); const [te,setTE]=useState(EMOJIS[0]); const [tc,setTCo]=useState(COLORS[0]);
+  const steps=["ob1","ob2","ob3","ob4","ob5"]; const idx=steps.indexOf(step);
+  const Dots = ()=><div className="pdots">{steps.map((s,i)=><div key={s} className={`pd ${i===idx?"on":""}`}/>)}</div>;
+  const addChild = () => { if(!tn)return; const n=children.length; setKids(p=>[...p,makeChild(tn,te,tc)]); setTN(""); setTE(EMOJIS[(n+1)%EMOJIS.length]); setTCo(COLORS[(n+1)%COLORS.length]); };
+
+  if(step==="ob1") return(
+    <div className="ob fu">
+      <div style={{fontFamily:"'Baloo 2',cursive",fontSize:28,fontWeight:800,color:"#1C2B22",textAlign:"center"}}>Bright<span style={{color:"#3A9E7A"}}>Smiles</span></div>
+      <span style={{fontSize:60,textAlign:"center",display:"block",animation:"float 3s ease-in-out infinite"}}>🦷</span>
+      <h1 className="ob-title" style={{textAlign:"center"}}>Healthy teeth, happy family</h1>
+      <p className="ob-sub" style={{textAlign:"center"}}>Track morning and night brushing for every child, build good food habits, and make sure no one gets left behind. Free, and takes 2 minutes to set up.</p>
+      <button className="btn primary" onClick={()=>setStep("ob2")}>Get started</button>
+      <Dots/>
+    </div>
+  );
+  if(step==="ob2") return(
+    <div className="ob fu">
+      <span style={{fontSize:52,textAlign:"center",display:"block",animation:"float 3s ease-in-out infinite"}}>👋</span>
+      <h1 className="ob-title">What should we call you?</h1>
+      <div><p className="lbl">Your name</p><input className="inp" placeholder="e.g. Sarah" value={pname} onChange={e=>setPname(e.target.value)}/></div>
+      <button className="btn primary" disabled={!pname} onClick={()=>setStep("ob3")}>Next</button>
+      <button className="btn ghost" onClick={()=>setStep("ob1")}>Back</button>
+      <Dots/>
+    </div>
+  );
+  if(step==="ob3") return(
+    <div className="ob fu">
+      <span style={{fontSize:52,textAlign:"center",display:"block",animation:"float 3s ease-in-out infinite"}}>👨‍👩‍👧‍👦</span>
+      <h1 className="ob-title">Add your children</h1>
+      <p className="ob-sub">Add up to 4 children. You can always add more later from the home screen.</p>
+      {children.length>0&&<div style={{display:"flex",flexDirection:"column",gap:7}}>{children.map((c,i)=><div key={c.id} style={{display:"flex",alignItems:"center",gap:10,background:"white",border:"1.5px solid #E0DDD5",borderRadius:13,padding:"10px 14px"}}><div style={{width:36,height:36,borderRadius:"50%",background:c.color,display:"flex",alignItems:"center",justifyContent:"center",fontSize:19,flexShrink:0}}>{c.emoji}</div><span style={{fontWeight:700,color:"#1C2B22",flex:1}}>{c.name}</span><button onClick={()=>setKids(p=>p.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"#E8705A",cursor:"pointer",fontSize:18}}>✕</button></div>)}</div>}
+      {children.length<4&&<div style={{background:"#F8F7F2",border:"1.5px dashed #E0DDD5",borderRadius:15,padding:"14px 15px",display:"flex",flexDirection:"column",gap:11}}>
+        <div><p className="lbl">Child's name</p><input className="inp" placeholder="e.g. Liam" value={tn} onChange={e=>setTN(e.target.value)}/></div>
+        <div><p className="lbl">Avatar</p><div className="av-row">{EMOJIS.map(e=><div key={e} className={`av ${te===e?"on":""}`} onClick={()=>setTE(e)}>{e}</div>)}</div></div>
+        <div><p className="lbl">Colour</p><div className="col-row">{COLORS.map(c=><div key={c} className={`col ${tc===c?"on":""}`} style={{background:c}} onClick={()=>setTCo(c)}/>)}</div></div>
+        <button className="btn primary sm" disabled={!tn} onClick={addChild} style={{alignSelf:"flex-start"}}>Add {tn||"child"}</button>
+      </div>}
+      <button className="btn primary" disabled={children.length===0} onClick={()=>setStep("ob4")}>Next</button>
+      <button className="btn ghost" onClick={()=>setStep("ob2")}>Back</button>
+      <Dots/>
+    </div>
+  );
+  if(step==="ob4") return(
+    <div className="ob fu">
+      <span style={{fontSize:52,textAlign:"center",display:"block",animation:"float 3s ease-in-out infinite"}}>📍</span>
+      <h1 className="ob-title">Your Brisbane postcode</h1>
+      <p className="ob-sub">Queensland has the lowest fluoride coverage in Australia. Knowing your postcode lets us give your family a personalised fluoride risk level and specific brushing advice.</p>
+      <div><p className="lbl">Your postcode</p><input className="inp" placeholder="e.g. 4000" value={postcode} onChange={e=>setPC(e.target.value)} inputMode="numeric" maxLength="4"/></div>
+      {postcode.length===4&&<div style={{background:"white",border:"1.5px solid #E0DDD5",borderRadius:14,padding:"14px 16px"}} className="fu">
+        <div style={{fontSize:13,fontWeight:700,color:"#1C2B22",marginBottom:8}}>Postcode {postcode} result</div>
+        <div style={{height:8,background:"#E0DDD5",borderRadius:4,marginBottom:5,overflow:"hidden"}}><div style={{height:"100%",width:"62%",background:"linear-gradient(90deg,#E8705A,#F5A623)",borderRadius:4}}/></div>
+        <p style={{fontSize:12,color:"#E8705A",fontWeight:600,marginBottom:7}}>Fluoride coverage: approximately 62%, below the Queensland average</p>
+        <p style={{fontSize:13,color:"#3D5449",lineHeight:1.65}}>Because your local water has lower fluoride, brushing twice daily with fluoride toothpaste is the most important habit for your children. It compensates for what the water does not provide.</p>
+      </div>}
+      <button className="btn primary" disabled={!postcode} onClick={()=>setStep("ob5")}>Next</button>
+      <button className="btn ghost" onClick={()=>setStep("ob3")}>Back</button>
+      <Dots/>
+    </div>
+  );
+  if(step==="ob5") return(
+    <div className="ob fu">
+      <span style={{fontSize:52,textAlign:"center",display:"block",animation:"float 3s ease-in-out infinite"}}>🎯</span>
+      <h1 className="ob-title">Set a family reward</h1>
+      <p className="ob-sub">Children earn stars every time they brush. Set a real reward they are working toward. Something specific works much better than a general promise.</p>
+      <div><p className="lbl">What does your family get at {rewardGoal.target} stars?</p><input className="inp" placeholder="e.g. Pizza night, trip to the park, movie pick..." value={rewardGoal.label} onChange={e=>setRG(g=>({...g,label:e.target.value}))}/></div>
+      <div style={{background:"white",border:"1.5px solid #E0DDD5",borderRadius:14,padding:"14px 16px",display:"flex",flexDirection:"column",gap:8}}>
+        <p className="lbl">Target: {rewardGoal.target} stars</p>
+        <input type="range" min={20} max={100} step={10} value={rewardGoal.target} onChange={e=>setRG(g=>({...g,target:+e.target.value}))} style={{width:"100%",accentColor:"#3A9E7A"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#7A9088"}}><span>20 (easy)</span><span>100 (big reward)</span></div>
+      </div>
+      {rewardGoal.label&&<div style={{background:"#FEF4E0",border:"1px solid #F5A623",borderRadius:12,padding:"11px 14px",fontSize:13,color:"#1C2B22",lineHeight:1.65}}>When your family reaches {rewardGoal.target} stars: {rewardGoal.label} 🎉</div>}
+      <div><p className="lbl">Next dentist appointment (optional)</p><input className="inp" type="date" value={dentistDate} onChange={e=>setDD(e.target.value)}/></div>
+      <button className="btn primary" onClick={()=>{setTab("home");setStep("app");}}>Start using BrightSmiles</button>
+      <button className="btn ghost" onClick={()=>setStep("ob4")}>Back</button>
+      <Dots/>
+    </div>
+  );
+}
+
+function HomeScreen({ children, pname, setTab, updateKid, addCoins, showToast, setKids, startBrush, postcode, fluoPct, dentistDate, rewardGoal, coins }) {
+  const hour=new Date().getHours();
+  const greeting=hour<12?"Good morning":hour<18?"Good afternoon":"Good evening";
+  const unbrushed=children.filter(c=>!c.morning||!c.night);
+  const allDone=children.length>0&&children.every(c=>c.morning&&c.night);
+  const [showAdd,setShowAdd]=useState(false);
+  const [tn,setTN]=useState(""); const [te,setTE]=useState(EMOJIS[children.length%EMOJIS.length]); const [tc,setTCo]=useState(COLORS[children.length%COLORS.length]);
+  const daysUntil=dentistDate?Math.ceil((new Date(dentistDate)-new Date())/86400000):null;
+  const totalStars=children.reduce((s,c)=>s+(c.stars||0),0)+coins;
+  const rwPct=Math.min(100,Math.round((totalStars/rewardGoal.target)*100));
+
+  return(
+    <div className="fu">
+      <div style={{background:"linear-gradient(135deg,#E6F6F0 0%,#F5F0E8 100%)",padding:"20px 18px 16px"}}>
+        <p style={{fontSize:13,color:"#7A9088",fontWeight:500}}>{greeting}, {pname||"there"} 👋</p>
+        <h1 style={{fontFamily:"'Baloo 2',cursive",fontSize:24,fontWeight:800,color:"#1C2B22",lineHeight:1.25,marginTop:3}}>
+          {allDone?"All teeth clean today! 🎉":children.length===0?"Welcome to BrightSmiles":`${unbrushed.length} child${unbrushed.length>1?"ren":""} still to brush`}
+        </h1>
+        {!allDone&&unbrushed.length>0&&<p style={{fontSize:13,color:"#7A9088",marginTop:5,lineHeight:1.6}}>{unbrushed.map(c=>c.name).join(", ")} {unbrushed.length===1?"still needs":"still need"} to brush today.</p>}
+        {allDone&&<p style={{fontSize:13,color:"#3D5449",marginTop:5}}>Great work today. Keep going tomorrow morning.</p>}
+      </div>
+
+      {fluoPct&&<div className="fl-card fu" style={{background:"#FFFBF0",borderColor:"#F5A623"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}><span style={{fontSize:16}}>📍</span><span style={{fontFamily:"'Baloo 2',cursive",fontSize:14,fontWeight:700,color:"#1C2B22"}}>Postcode {postcode} — local fluoride level</span></div>
+        <div className="fl-bar"><div className="fl-fill" style={{width:`${fluoPct}%`}}/></div>
+        <p style={{fontSize:12,color:"#E8705A",fontWeight:600,marginBottom:5}}>{fluoPct}% coverage — below the Queensland average of 76%</p>
+        <p style={{fontSize:12,color:"#3D5449",lineHeight:1.6}}>Brushing with fluoride toothpaste twice daily is the most effective way to protect your children's teeth at home. Spit after brushing and do not rinse.</p>
+      </div>}
+
+      {dentistDate&&daysUntil!==null&&daysUntil<=21&&daysUntil>=0&&<div className="dr-card fu">
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}><span style={{fontSize:18}}>🦷</span><span style={{fontFamily:"'Baloo 2',cursive",fontSize:14,fontWeight:700,color:"#1C2B22"}}>Dentist appointment</span></div>
+        <p style={{fontSize:13,color:"#2A5F9A",lineHeight:1.6}}>{daysUntil===0?"Your dentist appointment is today!":`Your dentist appointment is in ${daysUntil} day${daysUntil>1?"s":""}. Make sure the children have brushed before going.`}</p>
+      </div>}
+
+      {rewardGoal.label&&<div className="rw-card fu">
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:4}}>
+          <div style={{fontFamily:"'Baloo 2',cursive",fontSize:15,fontWeight:700,color:"#1C2B22"}}>🎯 Family reward</div>
+          <span style={{fontSize:12,fontWeight:700,color:"#B87310"}}>{totalStars} / {rewardGoal.target} ⭐</span>
+        </div>
+        <div className="rw-prog"><div className="rw-fill" style={{width:`${rwPct}%`}}/></div>
+        <p style={{fontSize:13,color:"#3D5449",lineHeight:1.6}}>{rwPct>=100?`🎉 You reached the goal! Time for: ${rewardGoal.label}`:`${rewardGoal.target-totalStars} more stars until: ${rewardGoal.label}`}</p>
+      </div>}
+
+      {children.length===0?<div style={{margin:"14px 16px",background:"#FEF4E0",border:"1.5px solid #F5A623",borderRadius:15,padding:16,textAlign:"center"}}>
+        <div style={{fontSize:30,marginBottom:7}}>👨‍👩‍👧‍👦</div>
+        <div style={{fontFamily:"'Baloo 2',cursive",fontSize:15,fontWeight:700,color:"#1C2B22",marginBottom:8}}>No children added yet</div>
+        <button className="btn primary sm" onClick={()=>setShowAdd(true)}>Add a child</button>
+      </div>:<>
+        {children.length>1&&<><p className="sh">Brush together</p>
+        <div className="grp">
+          <div className="gb tog" onClick={()=>{setTab("brush");}}>
+            <div className="gb-icon">👨‍👩‍👧‍👦</div><div className="gb-title">All together</div><div className="gb-sub">Everyone at once</div>
+          </div>
+          <div className="gb" onClick={()=>setTab("brush")}>
+            <div className="gb-icon">🦷</div><div className="gb-title">One at a time</div><div className="gb-sub" style={{color:"#7A9088"}}>Pick each child below</div>
+          </div>
+        </div></>}
+
+        <p className="sh">Each child{children.length<4&&<span className="sha" onClick={()=>setShowAdd(true)}>Add child +</span>}</p>
+        {children.map((child,idx)=>(
+          <div key={child.id} className="cc fu" style={{animationDelay:`${idx*0.06}s`}}>
+            <div className="cc-top">
+              <div className="cc-av" style={{background:child.color+"28",border:`2px solid ${child.color}`}}>{child.emoji}</div>
+              <div style={{flex:1}}><div className="cc-name">{child.name}</div><div className="cc-sub">⭐ {child.stars||0} stars</div></div>
+              <div style={{display:"flex",gap:4}}>{child.morning&&<span title="Morning done" style={{fontSize:16}}>☀️</span>}{child.night&&<span title="Night done" style={{fontSize:16}}>🌙</span>}</div>
+            </div>
+            <div className="mn-row">
+              <div className={`mn-cell ${child.morning?"done":""}`}>
+                <span style={{fontSize:17}}>☀️</span>
+                <div className="mn-label">{child.morning?"Morning done!":"Morning brush"}</div>
+                {!child.morning&&<div className="mn-btns"><button className="mn-btn full" onClick={()=>startBrush(idx,"morning","full")}>2 min</button><button className="mn-btn quick" onClick={()=>startBrush(idx,"morning","quick")}>Quick</button></div>}
+                {child.morning&&<div style={{fontSize:18}}>✅</div>}
+              </div>
+              <div className={`mn-cell ${child.night?"done":""}`}>
+                <span style={{fontSize:17}}>🌙</span>
+                <div className="mn-label">{child.night?"Night done!":"Night brush"}</div>
+                {!child.night&&<div className="mn-btns"><button className="mn-btn full" onClick={()=>startBrush(idx,"night","full")}>2 min</button><button className="mn-btn quick" onClick={()=>startBrush(idx,"night","quick")}>Quick</button></div>}
+                {child.night&&<div style={{fontSize:18}}>✅</div>}
+              </div>
+            </div>
+          </div>
+        ))}
+      </>}
+
+      {children.length>0&&<div className="wk-card fu">
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{fontFamily:"'Baloo 2',cursive",fontSize:15,fontWeight:800}}>This week</div>
+          <div style={{fontSize:11,opacity:.85}}>☀️ morning  🌙 night</div>
+        </div>
+        <div className="wk-grid">
+          {DAYS.map((d,i)=>{
+            const h=children[0]?.history?.[i]||{am:false,pm:false};
+            const isToday=i===6;
+            return(<div key={d} className="wk-day">
+              <div className="wk-lbl">{d}</div>
+              <div className={`wk-am ${isToday?(children[0]?.morning?"wk-today":"wk-no"):h.am?"wk-yes":"wk-no"}`}>{(isToday?children[0]?.morning:h.am)?"✓":"·"}</div>
+              <div className={`wk-pm ${isToday?(children[0]?.night?"wk-today":"wk-no"):h.pm?"wk-yes":"wk-no"}`}>{(isToday?children[0]?.night:h.pm)?"✓":"·"}</div>
+            </div>);
+          })}
+        </div>
+        {children.length>1&&<p style={{fontSize:11,opacity:.8,marginTop:8}}>Showing {children[0]?.name}'s record.</p>}
+      </div>}
+
+      <p className="sh">Shortcuts</p>
+      <div className="qg">
+        {[["📋","Daily routines","Morning and night checklist","routine"],["🥗","Food guide","What helps and what to avoid","nutrition"],["💡","Free dental care","Check if your family qualifies","info"],["⚡","Quick brush","30 seconds on a hard night","brush"]].map(([ic,t,s,g])=>(
+          <div key={t} className="qc" onClick={()=>setTab(g)}><div className="qc-icon">{ic}</div><div className="qc-title">{t}</div><div className="qc-sub">{s}</div></div>
+        ))}
+      </div>
+
+      {showAdd&&<div className="modal-bg" onClick={()=>setShowAdd(false)}>
+        <div className="modal" onClick={e=>e.stopPropagation()}>
+          <div style={{fontFamily:"'Baloo 2',cursive",fontSize:20,fontWeight:800,color:"#1C2B22",textAlign:"center"}}>Add a child</div>
+          <div><p className="lbl">Name</p><input className="inp" placeholder="e.g. Emma" value={tn} onChange={e=>setTN(e.target.value)}/></div>
+          <div><p className="lbl">Avatar</p><div className="av-row">{EMOJIS.map(e=><div key={e} className={`av ${te===e?"on":""}`} onClick={()=>setTE(e)}>{e}</div>)}</div></div>
+          <div><p className="lbl">Colour</p><div className="col-row">{COLORS.map(c=><div key={c} className={`col ${tc===c?"on":""}`} style={{background:c}} onClick={()=>setTCo(c)}/>)}</div></div>
+          <button className="btn primary" disabled={!tn} onClick={()=>{setKids(p=>[...p,makeChild(tn,te,tc)]);setShowAdd(false);setTN("");}}>Add {tn||"child"}</button>
+          <button className="btn ghost" onClick={()=>setShowAdd(false)}>Cancel</button>
+        </div>
+      </div>}
+      <div className="g16"/>
+    </div>
+  );
+}
+
+function BrushScreen({ children, timerChild, setTC, timerMode, setTM, timerSession, setTS, running, timeLeft, done, totalTime, tipIdx, startTimer, stopTimer, resetTimer }) {
+  const r=80, circ=2*Math.PI*r, pct=timeLeft/totalTime, offset=circ*pct;
+  const stroke=running?(pct>.5?"#3A9E7A":pct>.25?"#F5A623":"#E8705A"):"#3A9E7A";
+  const mm=String(Math.floor(timeLeft/60)).padStart(2,"0");
+  const ss=String(timeLeft%60).padStart(2,"0");
+  const aName=timerChild==="all"?"everyone":children[timerChild]?.name||"your child";
+  const aEmoji=timerChild==="all"?"👨‍👩‍👧‍👦":children[timerChild]?.emoji||"🦷";
+  if(done) return(
+    <div className="done-sc fu">
+      <span className="done-big">🎉</span>
+      <h2 className="done-title">Well done!</h2>
+      <p className="done-msg">{timerMode==="full"?`${timerSession==="morning"?"Morning":"Night"} brush done for ${aName==="everyone"?"everyone":aName}. That is the most important thing you can do for their teeth.`:"30 seconds still keeps the habit going. Something is always better than nothing."}</p>
+      <div className="stars-chip"><span style={{fontSize:20}}>⭐</span><b>+{timerMode==="full"?15:8} stars earned</b></div>
+      {timerMode==="full"&&timerSession==="night"&&<div style={{background:"#E6F6F0",border:"1.5px solid #3A9E7A",borderRadius:13,padding:"12px 15px",width:"100%",fontSize:13,color:"#1C2B22",lineHeight:1.65}}><strong>Reminder:</strong> Spit after brushing but do not rinse with water. Leaving the fluoride on overnight gives the best protection.</div>}
+      <button className="btn primary" onClick={resetTimer}>Brush again</button>
+    </div>
+  );
+  return(
+    <div className="ts fu">
+      <div className="mb-bar">
+        <button className={`mb ${timerMode==="full"?"on":""}`} onClick={()=>{setTM("full");resetTimer();}}>Full brush (2 min)</button>
+        <button className={`mb ${timerMode==="quick"?"on":""}`} onClick={()=>{setTM("quick");resetTimer();}}>Quick mode (30 sec)</button>
+      </div>
+      <div style={{display:"flex",background:"#F2EFE8",borderRadius:11,padding:3,width:"100%"}}>
+        <button className={`mb ${timerSession==="morning"?"on":""}`} onClick={()=>{setTS("morning");resetTimer();}}>☀️ Morning</button>
+        <button className={`mb ${timerSession==="night"?"on":""}`}   onClick={()=>{setTS("night");resetTimer();}}>🌙 Night</button>
+      </div>
+      {timerMode==="quick"&&<div style={{background:"#FEF4E0",border:"1.5px solid #F5A623",borderRadius:12,padding:"11px 15px",width:"100%",fontSize:13,color:"#1C2B22",lineHeight:1.65}}><strong>Hard night?</strong> Thirty seconds still keeps the habit alive. Something is always better than nothing.</div>}
+      {children.length>0&&<div style={{width:"100%"}}><p className="lbl" style={{marginBottom:7}}>Who is brushing?</p>
+        <div className="who-row">
+          {children.length>1&&<div className={`wp ${timerChild==="all"?"on":""}`} onClick={()=>setTC("all")}><div className="wp-av">👨‍👩‍👧‍👦</div><span className="wp-name">All</span></div>}
+          {children.map((c,i)=><div key={c.id} className={`wp ${timerChild===i?"on":""}`} onClick={()=>setTC(i)}><div className="wp-av" style={{background:c.color+"22"}}>{c.emoji}</div><span className="wp-name">{c.name}</span></div>)}
+        </div>
+      </div>}
+      <div className={`t-char ${running?"go":""}`} onClick={()=>{if(!running&&!done)startTimer();}}>{aEmoji}</div>
+      <div className="ring">
+        <svg className="r-svg" width="186" height="186" viewBox="0 0 186 186">
+          <circle className="r-track" cx="93" cy="93" r={r}/>
+          <circle className="r-prog" cx="93" cy="93" r={r} stroke={stroke} strokeDasharray={circ} strokeDashoffset={offset}/>
+        </svg>
+        <div className="r-mid"><div className="r-time">{mm}:{ss}</div><div className="r-lbl">{running?"Keep going!":"Tap to start"}</div></div>
+      </div>
+      {running&&<div className="tip-box"><div className="tip-lbl">Brushing tip</div><div className="tip-txt">{TIPS[tipIdx]}</div></div>}
+      {!running?<button className="tbtn go" onClick={startTimer}>{timerMode==="full"?`Start ${timerSession} brush for ${aName}`:"Start 30-second quick brush"}</button>:<button className="tbtn stop" onClick={stopTimer}>Stop</button>}
+    </div>
+  );
+}
+
+function RoutineScreen({ routineTab, setRT, mTicks, setMT, nTicks, setNT, addCoins, showToast }) {
+  const steps=routineTab==="morning"?MORNING_STEPS:NIGHT_STEPS;
+  const ticks=routineTab==="morning"?mTicks:nTicks;
+  const setT=routineTab==="morning"?setMT:setNT;
+  const done=steps.filter(s=>ticks[s.id]).length;
+  const pct=Math.round((done/steps.length)*100);
+  const tick=(id)=>{const wasOn=ticks[id];setT(t=>({...t,[id]:!t[id]}));if(!wasOn)addCoins(2,185,300);if(!wasOn&&done+1===steps.length)showToast({emoji:"🏆",text:"Full routine complete!"});};
+  return(
+    <div className="rt-sc fu">
+      <div className="rt-tabs">
+        <button className={`rt ${routineTab==="morning"?"on":""}`} onClick={()=>setRT("morning")}>☀️ Morning routine</button>
+        <button className={`rt ${routineTab==="night"?"on":""}`}   onClick={()=>setRT("night")}>🌙 Night routine</button>
+      </div>
+      <div className="rt-card">
+        <div className="rt-head">
+          <span style={{fontSize:22}}>{routineTab==="morning"?"☀️":"🌙"}</span>
+          <div><div style={{fontFamily:"'Baloo 2',cursive",fontSize:16,fontWeight:700,color:"#1C2B22"}}>{routineTab==="morning"?"Morning routine":"Night routine"}</div><div style={{fontSize:12,color:"#7A9088",marginTop:1}}>{done} of {steps.length} steps done today</div></div>
+        </div>
+        <div className="p-bar"><div className="p-fill" style={{width:`${pct}%`}}/></div>
+        <div className="step-list">
+          {steps.map(s=><div key={s.id} className={`step ${ticks[s.id]?"on":""}`} onClick={()=>tick(s.id)}>
+            <div className="step-ck">{ticks[s.id]?"✓":""}</div>
+            <div><div className="s-name">{s.name}</div><div className="s-detail">{s.detail}</div></div>
+          </div>)}
+        </div>
+        {routineTab==="morning"&&<div className="note"><div className="note-lbl">Worth knowing</div><div className="note-txt">The morning brush matters, but the <strong>night brush is the most important one</strong>. If you only have time for one session, make it the night one. Bacteria work hardest while we sleep when there is no saliva to wash them away.</div></div>}
+        {routineTab==="night"&&<div className="note"><div className="note-lbl">Why night brushing matters most</div><div className="note-txt">Saliva production drops significantly during sleep. Bacteria can cause more damage overnight than during the whole day. A thorough night brush with fluoride toothpaste, followed by no food or drink, gives your child's teeth the best protection possible.</div></div>}
+      </div>
+    </div>
+  );
+}
+
+function NutritionScreen() {
+  const [exp,setExp]=useState(null);
+  return(
+    <div className="nu-sc fu">
+      <div className="nu-hero"><h2>Food and Dental Health</h2><p>What your child eats is the second biggest factor in preventing tooth decay. This guide keeps it practical.</p></div>
+      <div style={{background:"#EAF2FB",border:"1px solid #C4DCEF",borderRadius:14,padding:"13px 15px"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#2A5F9A",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>The most important thing to know</div>
+        <p style={{fontSize:13,color:"#1C2B22",lineHeight:1.72}}>It is not just <strong>what</strong> your child eats but <strong>how often</strong>. Every time we eat something other than water, the mouth turns acidic for about 20 minutes. Frequent snacking keeps the mouth acidic for longer, which is what causes decay. Three meals and a couple of snacks is far better than grazing all day.</p>
+      </div>
+      <div className="nu-card">
+        <div className="nu-title">✅ Foods that protect teeth</div>
+        {GOOD_FOODS.map((f,i)=><div key={i} className="fi good" onClick={()=>setExp(exp==="g"+i?null:"g"+i)}><span className="fi-em">{f.emoji}</span><div><div className="fi-name">{f.name}</div>{exp==="g"+i?<div className="fi-why">{f.why}</div>:<div className="fi-tap">Tap to see why</div>}</div></div>)}
+      </div>
+      <div className="nu-card">
+        <div className="nu-title">❌ Limit or avoid these</div>
+        {AVOID_FOODS.map((f,i)=><div key={i} className="fi avoid" onClick={()=>setExp(exp==="a"+i?null:"a"+i)}><span className="fi-em">{f.emoji}</span><div><div className="fi-name">{f.name}</div>{exp==="a"+i?<div className="fi-why">{f.why}</div>:<div className="fi-tap">Tap to see why</div>}</div></div>)}
+      </div>
+      <div className="nu-card">
+        <div className="nu-title">🟡 Fine in moderation</div>
+        {OK_FOODS.map((f,i)=><div key={i} className="fi ok" onClick={()=>setExp(exp==="o"+i?null:"o"+i)}><span className="fi-em">{f.emoji}</span><div><div className="fi-name">{f.name}</div>{exp==="o"+i?<div className="fi-why">{f.why}</div>:<div className="fi-tap">Tap to learn more</div>}</div></div>)}
+      </div>
+      <div style={{background:"#E6F6F0",border:"1px solid #A0D8C0",borderRadius:14,padding:"13px 15px"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#1F7055",textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:8}}>Practical tips for busy families</div>
+        {["Swap juice for water at dinner. Children adjust quickly, especially when water is the only option on the table.","If your child wants something sweet, let them have it at the end of a meal rather than as a separate snack. Meal saliva helps neutralise the sugar.","Wait at least 30 minutes after eating before brushing. Eating makes the mouth acidic and brushing too soon wears down softened enamel.","A small piece of cheese after a meal is one of the best things you can do. It neutralises acid and is easy to add to any lunch or dinner."].map((t,i)=>(
+          <div key={i} style={{display:"flex",gap:9,alignItems:"flex-start",marginBottom:i<3?9:0}}><span style={{fontSize:14,flexShrink:0,marginTop:1}}>💬</span><p style={{fontSize:13,color:"#1C2B22",lineHeight:1.65}}>{t}</p></div>
+        ))}
+      </div>
+      <div className="g16"/>
+    </div>
+  );
+}
+
+function InfoScreen({ postcode, fluoPct }) {
+  return(
+    <div className="in-sc fu">
+      <div className="in-hero"><h2 style={{fontFamily:"'Baloo 2',cursive",fontSize:21,fontWeight:800,marginBottom:5}}>Useful Information</h2><p style={{fontSize:13,opacity:.9,lineHeight:1.65}}>Government support, fluoride facts, and Brisbane dental health information</p></div>
+      <div className="in-card" style={{background:"#FEF4E0",borderColor:"#F5A623"}}>
+        <div className="in-title">Free Dental Care for Your Child</div>
+        <p className="in-body">The <strong>Child Dental Benefits Schedule (CDBS)</strong> covers basic dental services for eligible children aged 0 to 17.</p>
+        <div className="cdbs">$1,095</div>
+        <p style={{fontSize:13,color:"#B87310",fontWeight:600,marginBottom:9}}>available per eligible child over a 2-year period</p>
+        <div>{["Examinations","X-rays","Cleaning","Fillings","Fissure sealing"].map(s=><span key={s} className="tag">{s}</span>)}</div>
+        <div className="hi">Around 1 in 2 children qualify but only 1 in 3 families use it. Check eligibility at <strong>servicesaustralia.gov.au</strong> or call <strong>132 011</strong>.</div>
+        <p className="in-body">Your child needs to be aged 0 to 17 and receive an eligible government payment such as Family Tax Benefit.</p>
+      </div>
+      {fluoPct&&<div className="in-card">
+        <div className="in-title">Your Local Fluoride Information</div>
+        <p className="in-body" style={{marginBottom:9}}>Postcode {postcode} sits at approximately {fluoPct}% fluoride coverage, below the Queensland average of 76%.</p>
+        <div style={{height:8,background:"#E0DDD5",borderRadius:4,marginBottom:6,overflow:"hidden"}}><div style={{height:"100%",width:`${fluoPct}%`,background:"linear-gradient(90deg,#E8705A,#F5A623)",borderRadius:4}}/></div>
+        <div className="hi">Because your local water has lower fluoride, brushing twice daily with fluoride toothpaste is the most important habit for your children. Areas with full fluoride coverage in Queensland saw tooth decay drop by 10.7%, while non-fluoridated areas showed no improvement. (UQ Child Oral Health Study, 2025)</div>
+      </div>}
+      <div className="in-card">
+        <div className="in-title">Why This Matters</div>
+        {[["41.7%","of Australian children aged 5 to 10 already have tooth decay"],["27.1%","carry untreated decay that could have been prevented"],["64%","increase in preventable dental hospitalisations over the last decade"],["50.2%","tooth decay rate in low-income Queensland households, well above average"]].map(([n,t])=>(
+          <div key={n} className="stt"><div className="stn">{n}</div><div className="stb">{t}</div></div>
+        ))}
+        <p style={{fontSize:12,color:"#7A9088",marginTop:6}}>Sources: AIHW Healthy Teeth 2012 to 2014, AIHW Burden of Disease 2024, AIHW Hospitalisations dataset</p>
+      </div>
+      <div className="in-card">
+        <div className="in-title">When to See a Dentist</div>
+        {[["When the first tooth appears","Book the first dental visit. Early visits help children feel comfortable and let any concerns be spotted early."],["Every 6 months","Routine check-ups keep decay from progressing. Under the CDBS, these are free for eligible children."],["If you see white spots on teeth","White spots are early-stage decay. Caught at this stage, a dentist can often reverse them without drilling."]].map(([h,t])=>(
+          <div key={h} style={{marginBottom:10}}><div style={{fontSize:13,fontWeight:700,color:"#1C2B22",marginBottom:3}}>{h}</div><p className="in-body">{t}</p></div>
+        ))}
+      </div>
+      <div className="g16"/>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
